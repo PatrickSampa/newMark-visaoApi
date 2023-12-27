@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { GetInformationFromSapiensForSamirUseCase } from './GetInformationFromSapiensForSamirUseCase';
+import { GetInformationFromSapiensForSamirUseCase } from './ReadDocumentMovimentUseCase';
 
 export class GetInformationFromSapiensForSamirController {
   constructor(
@@ -7,14 +7,24 @@ export class GetInformationFromSapiensForSamirController {
   ) {}
 
   async handle(request: Request, response: Response): Promise<Response> {
-    const { email, password, observacao_sapiens } = request.body;
-
+    const {
+      email,
+      password,
+      observacao_sapiens,
+      movimentacao,
+      conteudo,
+      timeCreationDocument,
+    } = request.body;
+    console.log(request.body);
     try {
       const responseInfo =
         await this.getInformationFromSapiensForSamirUseCase.execute(
           email,
           password,
           observacao_sapiens,
+          movimentacao,
+          conteudo,
+          timeCreationDocument,
         );
       return response.status(200).json(responseInfo);
     } catch (erro) {
