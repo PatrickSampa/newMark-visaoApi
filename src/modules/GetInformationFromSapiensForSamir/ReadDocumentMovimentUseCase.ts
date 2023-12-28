@@ -21,7 +21,7 @@ export class GetInformationFromSapiensForSamirUseCase {
     observacao_sapiens: string,
     movimentacao: string,
     conteudo: string,
-    timeCreationDocument?: string,
+    timeCreationDocument?: number,
   ): Promise<string | null | unknown> {
     const response: Array<IInformationsForCalculeDTO> = [];
     try {
@@ -50,14 +50,14 @@ export class GetInformationFromSapiensForSamirUseCase {
         if (getArvoreDocumento.length <= 0) {
           await uploudObservacaoUseCase.execute(
             [ProcessSapiens[i]],
-            'DOSPREV NÃO ENCONTRADO',
+            'ERRO AO LÊ ARVORE DE DOCUMENTO',
             token,
           );
           continue;
         }
 
         if (timeCreationDocument) {
-          const objectsWanted = getArvoreDocumento.filter((Documento) => {
+          const objectsWanted = getArvoreDocumento.find((Documento) => {
             const nomeMovimentacao = Documento?.descricao;
             const nameWanted = Documento?.documento.tipoDocumento.nome;
             const name = nameWanted == conteudo;
@@ -68,33 +68,42 @@ export class GetInformationFromSapiensForSamirUseCase {
             if (name && wantedIndexOf != -1) {
               const data = Documento.documento.dataHoraProducao.split('T')[0];
               const newDate = convertToDate(data);
-              console.log(convertToDate(data));
-              console.log(verificarQuantosDiasDocumentExpi(newDate, 45));
 
+              if (
+                0 >
+                verificarQuantosDiasDocumentExpi(newDate, timeCreationDocument)
+              ) {
+                //processo invalido fora do prazo
+              } else {
+                return Documento;
+              }
+            }
+          });
+          if (objectsWanted != undefined) {
+            //etiquetar processo com a string que o usuario informou
+          } else {
+            //etiquetar processo invalido fora do prazo
+          }
+        } else {
+          const objectsWanted = getArvoreDocumento.find((Documento) => {
+            const nomeMovimentacao = Documento?.descricao;
+            const nameWanted = Documento?.documento.tipoDocumento.nome;
+            const name = nameWanted == conteudo;
+
+            const wantedIndexOf = nomeMovimentacao.indexOf(
+              movimentacao.toUpperCase(),
+            );
+            if (name && wantedIndexOf != -1) {
               return Documento;
             }
           });
-          console.log(objectsWanted);
-        }
-
-        /* const ObjectWanted = getArvoreDocumento.find((Documento) => {
-          const nomeMovimentacao = Documento?.descricao;
-
-          const nameWanted = Documento?.documento.tipoDocumento.nome;
-          const test = nameWanted.indexOf(conteudo);
-
-          const wantedIndexOf = nomeMovimentacao.indexOf(
-            'EXPEDIÇÃO DE DOCUMENTO',
-          );
-
-          const wantedTrueIncludes =
-            nomeMovimentacao.includes('EXPEDIÇÃO DE DOCUMENTO') == true;
-
-          if (wantedIndexOf != -1 && wantedTrueIncludes) {
-            objectComCertezaDeExistir = true;
-            return Documento;
+          if (objectsWanted != undefined) {
+            //etiquetar a etiqueta que o usuario informou
+            console.log('PASSOU');
+          } else {
+            //String não encontrada
           }
-        }); */
+        }
 
         /* const objectDosPrevMaisAtual = getArvoreDocumento.find((Documento) => {
           const movimento = Documento?.descricao.split('.');
