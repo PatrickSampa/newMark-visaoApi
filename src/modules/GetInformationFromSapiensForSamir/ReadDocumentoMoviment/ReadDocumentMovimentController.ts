@@ -15,7 +15,7 @@ export class GetInformationFromSapiensForSamirController {
       conteudo,
       timeCreationDocument,
     } = request.body;
-    console.log(request.body);
+    
     try {
       const responseInfo =
         await this.getInformationFromSapiensForSamirUseCase.execute(

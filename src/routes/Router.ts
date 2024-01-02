@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { loginController } from '../modules/Login/index';
 import { getUserResponsibleIdController } from '../modules/GetUserResponsibleId/index';
 import { getInformationFromSapiensForSamirController } from '../modules/GetInformationFromSapiensForSamir/ReadDocumentoMoviment';
+import { readDocumentPageUseController } from '../modules/GetInformationFromSapiensForSamir/ReadDocumentoPage';
 
 const rotasTestes = Router();
 
@@ -15,6 +16,10 @@ rotasTestes.get('/id', (req, res) => {
 
 rotasTestes.get('/processos', (req, res) => {
   return getInformationFromSapiensForSamirController.handle(req, res);
+});
+
+rotasTestes.get('/page', (req, res) => {
+  return readDocumentPageUseController.handle(req, res);
 });
 
 export { rotasTestes };

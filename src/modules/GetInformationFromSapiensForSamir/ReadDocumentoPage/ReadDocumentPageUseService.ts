@@ -1,13 +1,16 @@
 import { IInformationsForCalculeDTO } from '../../../DTO/InformationsForCalculeDTO';
+import { CreateHtmlFromPdf } from '../../../python';
 import { getPastaUseCase } from '../../GetPasta';
 import { getTarefaUseCase } from '../../GetTarefa';
 import { getUserResponsibleIdUseCase } from '../../GetUserResponsibleId';
 import { loginUserCase } from '../../Login';
 import { ResponseFolder } from '../../SapiensOperations/Response/ResponseFolder';
 import { ResponseProcess } from '../../SapiensOperations/Response/ResponseProcess';
+import { uploadPaginaDosprevUseCase } from '../../UploadPaginaDosprev';
 import { uploudObservacaoUseCase } from '../../UploudObservacao';
 import { convertToDate } from '../Help/createFormatDate';
 import { verificarQuantosDiasDocumentExpi } from '../Help/verificarQuantosDiasDocumentExpi';
+import * as fs from "fs";
 
 export class ReadDocumentPageUseService {
   async execute(
@@ -17,12 +20,14 @@ export class ReadDocumentPageUseService {
     movimentacao: string,
     conteudo: string,
     timeCreationDocument?: number,
+    StringBusca?: string
   ): Promise<string | null | unknown> {
     const response: Array<IInformationsForCalculeDTO> = [];
     try {
       const token = await loginUserCase.execute({ username, password });
       const user_id = await getUserResponsibleIdUseCase.execute(token);
       const limit = 333;
+      let obj: any = "";
 
       const ProcessSapiens: ResponseProcess = await getTarefaUseCase.execute({
         user_id,
@@ -46,6 +51,7 @@ export class ReadDocumentPageUseService {
           );
           continue;
         }
+
 
         if (timeCreationDocument) {
           const objectsWanted = getArvoreDocumento.find((Documento) => {
@@ -88,15 +94,39 @@ export class ReadDocumentPageUseService {
               return Documento;
             }
           });
+          obj = objectsWanted;
           if (objectsWanted != undefined) {
-            //etiquetar a etiqueta que o usuario informou
-            console.log('PASSOU');
+            const typeDocument = objectsWanted.documento.componentesDigitais[0].mimetype.split("/")[1].trim();
+            if(typeDocument == "html"){
+              const page = await uploadPaginaDosprevUseCase.execute(objectsWanted.documento.componentesDigitais[0].id,
+                token)
+                
+                const itemWantedIndexOf = page.indexOf(StringBusca)
+                const itemWantedIncludes = page.includes(StringBusca)
+                
+                if(itemWantedIndexOf !== -1 && itemWantedIncludes){
+                  //etiquetar
+                 await CreateHtmlFromPdf();
+                 const content = fs.readFileSync('./src/FileHtml/teste.html', "utf-8");
+                 console.log(content.indexOf("SEM RESTRICAO"))
+                }else if(!itemWantedIncludes && itemWantedIndexOf == -1){
+                  //etiquetar
+                }else{
+                  //etiquetar
+                }
+            }else{
+              console.log("PDF")
+              //aqui vai ser o pdf
+            }
+            
+
+            
           } else {
             //String não encontrada
           }
         }
 
-        return 'dasdads';
+        return obj;
       }
     } catch (e) {
       if (response.length > 0) {
