@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { loginController } from '../modules/Login/index';
 import { getUserResponsibleIdController } from '../modules/GetUserResponsibleId/index';
-import { getInformationFromSapiensForSamirController } from '../modules/GetInformationFromSapiensForSamir';
+import { getInformationFromSapiensForSamirController } from '../modules/GetInformationFromSapiensForSamir/ReadDocumentoMoviment';
 
 const rotasTestes = Router();
 

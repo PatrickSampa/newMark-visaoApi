@@ -1,18 +1,18 @@
 //import axios from 'axios';
-import { getUserResponsibleIdUseCase } from '../GetUserResponsibleId';
-import { loginUserCase } from '../Login';
+import { getUserResponsibleIdUseCase } from '../../GetUserResponsibleId';
+import { loginUserCase } from '../../Login';
 
 //const { JSDOM } = require('jsdom');
 //import { decodeBase64FileWithHash } from '../../Help/teste';
-import { getTarefaUseCase } from '../GetTarefa';
-import { ResponseProcess } from '../SapiensOperations/Response/ResponseProcess';
-import { getPastaUseCase } from '../GetPasta';
-import { ResponseFolder } from '../SapiensOperations/Response/ResponseFolder';
-import { uploudObservacaoUseCase } from '../UploudObservacao';
+import { getTarefaUseCase } from '../../GetTarefa';
+import { ResponseProcess } from '../../SapiensOperations/Response/ResponseProcess';
+import { getPastaUseCase } from '../../GetPasta';
+import { ResponseFolder } from '../../SapiensOperations/Response/ResponseFolder';
+import { uploudObservacaoUseCase } from '../../UploudObservacao';
 
-import { IInformationsForCalculeDTO } from '../../DTO/InformationsForCalculeDTO';
-import { convertToDate } from './Help/createFormatDate';
-import { verificarQuantosDiasDocumentExpi } from './Help/verificarQuantosDiasDocumentExpi';
+import { IInformationsForCalculeDTO } from '../../../DTO/InformationsForCalculeDTO';
+import { convertToDate } from '../Help/createFormatDate';
+import { verificarQuantosDiasDocumentExpi } from '../Help/verificarQuantosDiasDocumentExpi';
 
 export class GetInformationFromSapiensForSamirUseCase {
   async execute(
@@ -28,10 +28,6 @@ export class GetInformationFromSapiensForSamirUseCase {
       const token = await loginUserCase.execute({ username, password });
       const user_id = await getUserResponsibleIdUseCase.execute(token);
       const limit = 333;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const objectComCertezaDeExistir = false;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const objectPodeOuNaoExistir = false;
 
       const ProcessSapiens: ResponseProcess = await getTarefaUseCase.execute({
         user_id,
@@ -105,16 +101,6 @@ export class GetInformationFromSapiensForSamirUseCase {
           }
         }
 
-        /* const objectDosPrevMaisAtual = getArvoreDocumento.find((Documento) => {
-          const movimento = Documento?.descricao.split('.');
-          return movimento[0] == 'JUNTADA DOSSIE DOSSIE PREVIDENCIARIO REF';
-        });
-
-        const objetoAntigoDosprevMaisAtual = getArvoreDocumento.find(
-          (Documento) =>
-            Documento?.documento?.tipoDocumento?.sigla == 'DOSPREV',
-        );
- */
         return 'dasdads';
       }
     } catch (e) {
