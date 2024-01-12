@@ -118,14 +118,15 @@ export class ReadDocumentPageUseService {
                   objectsWanted.documento.componentesDigitais[0].id,
                   token,
                 );
-                console.log(objectsWanted.documento.componentesDigitais[0].id);
-                observacoesFinais = objectsWanted;
+
                 const itemWantedIndexOf = page.indexOf(StringBusca[contador]);
                 const itemWantedIncludes = page.includes(StringBusca[contador]);
 
                 if (itemWantedIndexOf !== -1 && itemWantedIncludes) {
                   console.log('ACHOU?');
-                  observacoesFinais += StringObservacao + '';
+                  observacoesFinais += StringObservacao[contador] + ', ';
+                  console.log(observacoesFinais);
+                  console.log(StringObservacao);
                 } else if (!itemWantedIncludes && itemWantedIndexOf == -1) {
                   //etiquetar
                 } else {
