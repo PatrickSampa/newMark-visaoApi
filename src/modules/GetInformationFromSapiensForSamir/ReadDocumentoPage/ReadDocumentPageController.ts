@@ -1,11 +1,8 @@
 import { Request, Response } from 'express';
 import { ReadDocumentPageUseService } from './ReadDocumentPageUseService';
 
-
 export class ReadDocumentPageUseController {
-  constructor(
-    private readDocumentPageUseService: ReadDocumentPageUseService,
-  ) {}
+  constructor(private readDocumentPageUseService: ReadDocumentPageUseService) {}
 
   async handle(request: Request, response: Response): Promise<Response> {
     const {
@@ -14,21 +11,22 @@ export class ReadDocumentPageUseController {
       observacao_sapiens,
       movimentacao,
       conteudo,
+      StringBusca,
+      StringObservacao,
       timeCreationDocument,
-      StringBusca
     } = request.body;
-    
+    console.log(request.body);
     try {
-      const responseInfo =
-        await this.readDocumentPageUseService.execute(
-          email,
-          password,
-          observacao_sapiens,
-          movimentacao,
-          conteudo,
-          timeCreationDocument,
-          StringBusca
-        );
+      const responseInfo = await this.readDocumentPageUseService.execute(
+        email,
+        password,
+        observacao_sapiens,
+        movimentacao,
+        conteudo,
+        StringBusca,
+        StringObservacao,
+        timeCreationDocument,
+      );
       return response.status(200).json(responseInfo);
     } catch (erro) {
       return response.status(400).json({
