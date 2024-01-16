@@ -2,7 +2,6 @@
 import { getUserResponsibleIdUseCase } from '../../GetUserResponsibleId';
 import { loginUserCase } from '../../Login';
 
-const { JSDOM } = require('jsdom');
 //import { decodeBase64FileWithHash } from '../../Help/teste';
 import { getTarefaUseCase } from '../../GetTarefa';
 import { ResponseProcess } from '../../SapiensOperations/Response/ResponseProcess';
@@ -13,7 +12,6 @@ import { uploudObservacaoUseCase } from '../../UploudObservacao';
 import { IInformationsForCalculeDTO } from '../../../DTO/InformationsForCalculeDTO';
 import { convertToDate } from '../Help/createFormatDate';
 import { verificarQuantosDiasDocumentExpi } from '../Help/verificarQuantosDiasDocumentExpi';
-import { uploadPaginaDosprevUseCase } from '../../UploadPaginaDosprev';
 
 export class GetInformationFromSapiensForSamirUseCase {
   async execute(
@@ -29,9 +27,7 @@ export class GetInformationFromSapiensForSamirUseCase {
       const token = await loginUserCase.execute({ username, password });
       const user_id = await getUserResponsibleIdUseCase.execute(token);
       const limit = 333;
-      const obj = "";
-      
-      
+
       const ProcessSapiens: ResponseProcess = await getTarefaUseCase.execute({
         user_id,
         observacao_sapiens,
@@ -99,13 +95,12 @@ export class GetInformationFromSapiensForSamirUseCase {
           if (objectsWanted != undefined) {
             //etiquetar a etiqueta que o usuario informou
             console.log('PASSOU');
- 
           } else {
             //String não encontrada
           }
         }
 
-        return "aassd";
+        return 'aassd';
       }
     } catch (e) {
       if (response.length > 0) {

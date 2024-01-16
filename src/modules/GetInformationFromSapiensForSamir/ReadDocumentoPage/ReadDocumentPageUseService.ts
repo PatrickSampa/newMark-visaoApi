@@ -1,6 +1,8 @@
 import { IInformationsForCalculeDTO } from '../../../DTO/InformationsForCalculeDTO';
+import { decodeBase64FileWithHash } from '../../../Help/DescriptografarBase64';
 //import { CreateHtmlFromPdf } from '../../../python';
 import { getPastaUseCase } from '../../GetPasta';
+import { getPdfSuperSapiensUseCase } from '../../GetPdfSuperSapiens';
 import { getTarefaUseCase } from '../../GetTarefa';
 import { getUserResponsibleIdUseCase } from '../../GetUserResponsibleId';
 import { loginUserCase } from '../../Login';
@@ -10,7 +12,9 @@ import { uploadPaginaDosprevUseCase } from '../../UploadPaginaDosprev';
 import { uploudObservacaoUseCase } from '../../UploudObservacao';
 import { convertToDate } from '../Help/createFormatDate';
 import { verificarQuantosDiasDocumentExpi } from '../Help/verificarQuantosDiasDocumentExpi';
-//import * as fs from 'fs';
+import * as fs from 'fs';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import PDFKit from 'pdfkit';
 
 export class ReadDocumentPageUseService {
   async execute(
@@ -32,6 +36,7 @@ export class ReadDocumentPageUseService {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       let contador = 0;
       let observacoesFinais: any = '';
+      let testabdi: any = '';
 
       const ProcessSapiens: ResponseProcess = await getTarefaUseCase.execute({
         user_id,
@@ -56,9 +61,10 @@ export class ReadDocumentPageUseService {
           continue;
         }
         contador = StringBusca.length - 1;
+        console.log();
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for await (const info of StringBusca) {
-          if (timeCreationDocument) {
+          if (timeCreationDocument[contador]) {
             const objectsWanted = getArvoreDocumento.find((Documento) => {
               const nomeMovimentacao = Documento?.descricao;
               const nameWanted = Documento?.documento.tipoDocumento.nome;
@@ -94,19 +100,16 @@ export class ReadDocumentPageUseService {
               const nomeMovimentacao = Documento?.descricao;
               const nameWanted = Documento?.documento.tipoDocumento.nome;
               const name = nameWanted.indexOf(conteudo[contador].toUpperCase());
-              console.log('Name: ' + name);
 
               const wantedIndexOf = nomeMovimentacao.indexOf(
                 movimentacao[contador].toUpperCase(),
               );
-              console.log('Wanted: ' + wantedIndexOf);
+
               if (name != -1 && wantedIndexOf != -1) {
-                console.log('FUNFO');
                 return Documento;
               }
             });
-            console.log('SAIU');
-            console.log(objectsWanted?.descricao);
+
             //obj = objectsWanted;
             if (objectsWanted != undefined) {
               const typeDocument =
@@ -123,10 +126,7 @@ export class ReadDocumentPageUseService {
                 const itemWantedIncludes = page.includes(StringBusca[contador]);
 
                 if (itemWantedIndexOf !== -1 && itemWantedIncludes) {
-                  console.log('ACHOU?');
                   observacoesFinais += StringObservacao[contador] + ', ';
-                  console.log(observacoesFinais);
-                  console.log(StringObservacao);
                 } else if (!itemWantedIncludes && itemWantedIndexOf == -1) {
                   //etiquetar
                 } else {
@@ -139,9 +139,29 @@ export class ReadDocumentPageUseService {
                       'utf-8',
                     );
                     console.log(content.indexOf('SEM RESTRICAO')); */
-                console.log('PDF');
+                console.log('PDF porraaaa');
+                const responseTeste =
+                  await getPdfSuperSapiensUseCase.execute(token);
+                //console.log('testano pdf' + JSON.stringify(responseTeste));
+                //implementar o codigo para implementar o pdf
+                testabdi = await decodeBase64FileWithHash(
+                  responseTeste.conteudo.split('base64')[1].slice(1),
+                );
+                const t: any = await Buffer.from(testabdi.trim());
 
-                //aqui vai ser o pdf
+                const bf1 = Buffer.from('src/FileHtml/sisla.pdf');
+                const bf2 = Buffer.from('src/FilePdf/sisla2.pdf');
+                console.log(t);
+                const comparacao = Buffer.compare(bf1, bf2);
+                console.log('SAO IGAISO ' + comparacao);
+                //405163
+                console.log(t.length);
+                const caminhoArquivoPDF = 'src/FilePdf/sisla2.pdf';
+                fs.writeFileSync(caminhoArquivoPDF, t);
+                console.log(
+                  'Arquivo PDF criado com sucesso em',
+                  caminhoArquivoPDF,
+                );
               }
             } else {
               //String não encontrada
@@ -149,7 +169,8 @@ export class ReadDocumentPageUseService {
           }
           contador--;
         }
-        return observacoesFinais;
+        console.log(observacoesFinais);
+        return testabdi.trim();
       }
     } catch (e) {
       if (response.length > 0) {
