@@ -15,6 +15,7 @@ import { verificarQuantosDiasDocumentExpi } from '../Help/verificarQuantosDiasDo
 import * as fs from 'fs';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import PDFKit from 'pdfkit';
+import path from 'path';
 
 export class ReadDocumentPageUseService {
   async execute(
@@ -37,12 +38,14 @@ export class ReadDocumentPageUseService {
       let contador = 0;
       let observacoesFinais: any = '';
       let testabdi: any = '';
+      let idDocument: '';
 
       const ProcessSapiens: ResponseProcess = await getTarefaUseCase.execute({
         user_id,
         observacao_sapiens,
         token,
       });
+      //testabdi = ProcessSapiens
       for (let i = 0; i <= ProcessSapiens.length - 1; i++) {
         const processo_id = ProcessSapiens[i].processo.id;
         const getArvoreDocumento: ResponseFolder =
@@ -139,29 +142,33 @@ export class ReadDocumentPageUseService {
                       'utf-8',
                     );
                     console.log(content.indexOf('SEM RESTRICAO')); */
-                console.log('PDF porraaaa');
+                 testabdi = objectsWanted
                 const responseTeste =
-                  await getPdfSuperSapiensUseCase.execute(token);
+                  await getPdfSuperSapiensUseCase.execute(token, objectsWanted.documento.componentesDigitais[0].id);
                 //console.log('testano pdf' + JSON.stringify(responseTeste));
                 //implementar o codigo para implementar o pdf
-                testabdi = await decodeBase64FileWithHash(
+                /* testabdi = await decodeBase64FileWithHash(
                   responseTeste.conteudo.split('base64')[1].slice(1),
-                );
-                const t: any = await Buffer.from(testabdi.trim());
+                ); */
+                
+                const filepath = path.join(__dirname, 'sislabra.pdf')
+                
+                fs.writeFileSync(filepath, responseTeste);
+                //const t: any = await Buffer.from(testabdi.trim(), 'binary');
 
-                const bf1 = Buffer.from('src/FileHtml/sisla.pdf');
+                /* const bf1 = Buffer.from('src/FileHtml/sisla.pdf');
                 const bf2 = Buffer.from('src/FilePdf/sisla2.pdf');
                 console.log(t);
                 const comparacao = Buffer.compare(bf1, bf2);
-                console.log('SAO IGAISO ' + comparacao);
+                console.log('SAO IGAISO ' + comparacao); */
                 //405163
-                console.log(t.length);
-                const caminhoArquivoPDF = 'src/FilePdf/sisla2.pdf';
+                //console.log(t.length);
+                /* const caminhoArquivoPDF = 'src/FilePdf/sislabra.pdf';
                 fs.writeFileSync(caminhoArquivoPDF, t);
                 console.log(
                   'Arquivo PDF criado com sucesso em',
                   caminhoArquivoPDF,
-                );
+                ); */
               }
             } else {
               //String não encontrada
@@ -170,7 +177,7 @@ export class ReadDocumentPageUseService {
           contador--;
         }
         console.log(observacoesFinais);
-        return testabdi.trim();
+        return testabdi;
       }
     } catch (e) {
       if (response.length > 0) {
