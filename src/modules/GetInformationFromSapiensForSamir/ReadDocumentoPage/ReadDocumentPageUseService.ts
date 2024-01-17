@@ -1,5 +1,5 @@
 import { IInformationsForCalculeDTO } from '../../../DTO/InformationsForCalculeDTO';
-import { decodeBase64FileWithHash } from '../../../Help/DescriptografarBase64';
+
 //import { CreateHtmlFromPdf } from '../../../python';
 import { getPastaUseCase } from '../../GetPasta';
 import { getPdfSuperSapiensUseCase } from '../../GetPdfSuperSapiens';
@@ -12,10 +12,10 @@ import { uploadPaginaDosprevUseCase } from '../../UploadPaginaDosprev';
 import { uploudObservacaoUseCase } from '../../UploudObservacao';
 import { convertToDate } from '../Help/createFormatDate';
 import { verificarQuantosDiasDocumentExpi } from '../Help/verificarQuantosDiasDocumentExpi';
-import * as fs from 'fs';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import PDFKit from 'pdfkit';
-import path from 'path';
+/* import * as fs from 'fs';
+
+
+import path from 'path'; */
 
 export class ReadDocumentPageUseService {
   async execute(
@@ -27,6 +27,7 @@ export class ReadDocumentPageUseService {
     StringBusca: string[],
     StringObservacao: string[],
     timeCreationDocument: number[],
+    idUser: string,
   ): Promise<string | null | unknown> {
     const response: Array<IInformationsForCalculeDTO> = [];
     try {
@@ -37,8 +38,7 @@ export class ReadDocumentPageUseService {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       let contador = 0;
       let observacoesFinais: any = '';
-      let testabdi: any = '';
-      let idDocument: '';
+      const testabdi: any = '';
 
       const ProcessSapiens: ResponseProcess = await getTarefaUseCase.execute({
         user_id,
@@ -136,39 +136,18 @@ export class ReadDocumentPageUseService {
                   //etiquetar
                 }
               } else {
-                /* await CreateHtmlFromPdf();
-                    const content = fs.readFileSync(
-                      './src/FileHtml/teste.html',
-                      'utf-8',
-                    );
-                    console.log(content.indexOf('SEM RESTRICAO')); */
-                 testabdi = objectsWanted
-                const responseTeste =
-                  await getPdfSuperSapiensUseCase.execute(token, objectsWanted.documento.componentesDigitais[0].id);
-                //console.log('testano pdf' + JSON.stringify(responseTeste));
-                //implementar o codigo para implementar o pdf
-                /* testabdi = await decodeBase64FileWithHash(
-                  responseTeste.conteudo.split('base64')[1].slice(1),
-                ); */
-                
-                const filepath = path.join(__dirname, 'sislabra.pdf')
-                
-                fs.writeFileSync(filepath, responseTeste);
-                //const t: any = await Buffer.from(testabdi.trim(), 'binary');
-
-                /* const bf1 = Buffer.from('src/FileHtml/sisla.pdf');
-                const bf2 = Buffer.from('src/FilePdf/sisla2.pdf');
-                console.log(t);
-                const comparacao = Buffer.compare(bf1, bf2);
-                console.log('SAO IGAISO ' + comparacao); */
-                //405163
-                //console.log(t.length);
-                /* const caminhoArquivoPDF = 'src/FilePdf/sislabra.pdf';
-                fs.writeFileSync(caminhoArquivoPDF, t);
-                console.log(
-                  'Arquivo PDF criado com sucesso em',
-                  caminhoArquivoPDF,
-                ); */
+                const responseTeste = await getPdfSuperSapiensUseCase.execute(
+                  token,
+                  objectsWanted.documento.componentesDigitais[0].id,
+                  idUser,
+                );
+                console.log('true?' + responseTeste);
+                //const filepath = path.join(__dirname, 'sislabra.pdf');
+                /* const filepath = path.join(
+                  'E:/AGU/api-mark/src/modules/Pdfs',
+                  'sislabra.pdf',
+                );
+                fs.writeFileSync(filepath, responseTeste); */
               }
             } else {
               //String não encontrada

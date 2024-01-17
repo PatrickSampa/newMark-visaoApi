@@ -14,6 +14,7 @@ export class ReadDocumentPageUseController {
       StringBusca,
       StringObservacao,
       timeCreationDocument,
+      idUser,
     } = request.body;
     console.log(request.body);
     try {
@@ -26,6 +27,7 @@ export class ReadDocumentPageUseController {
         StringBusca,
         StringObservacao,
         timeCreationDocument,
+        idUser,
       );
       return response.status(200).json(responseInfo);
     } catch (erro) {
