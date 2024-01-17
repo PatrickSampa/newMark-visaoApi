@@ -141,7 +141,15 @@ export class ReadDocumentPageUseService {
                   objectsWanted.documento.componentesDigitais[0].id,
                   idUser,
                 );
-                console.log('true?' + responseTeste);
+                if (!responseTeste) {
+                  await uploudObservacaoUseCase.execute(
+                    [ProcessSapiens[i]],
+                    'ERRO AO LÊ O PDF',
+                    token,
+                  );
+                  continue;
+                }
+
                 //const filepath = path.join(__dirname, 'sislabra.pdf');
                 /* const filepath = path.join(
                   'E:/AGU/api-mark/src/modules/Pdfs',
