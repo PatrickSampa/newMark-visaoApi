@@ -1,5 +1,7 @@
 import { IInformationsForCalculeDTO } from '../../../DTO/InformationsForCalculeDTO';
-import { CreateHtmlFromPdf } from '../../../python';
+import { deletePDF } from '../../../Help/DeletePdf';
+import { readPDF } from '../../../Help/ReadPdf';
+//import { CreateHtmlFromPdf } from '../../../python';
 
 //import { CreateHtmlFromPdf } from '../../../python';
 import { getPastaUseCase } from '../../GetPasta';
@@ -14,7 +16,7 @@ import { uploadPaginaDosprevUseCase } from '../../UploadPaginaDosprev';
 import { uploudObservacaoUseCase } from '../../UploudObservacao';
 import { convertToDate } from '../Help/createFormatDate';
 import { verificarQuantosDiasDocumentExpi } from '../Help/verificarQuantosDiasDocumentExpi';
-import * as fs from 'fs';
+////import * as fs from 'fs';
 
 //import path from 'path';
 
@@ -146,7 +148,7 @@ export class ReadDocumentPageUseService {
                   'utf8',
                 );
                 console.log(valor.indexOf('Empr')); */
-                /* const responseTeste = await getPdfSuperSapiensUseCase.execute(
+                const responseTeste = await getPdfSuperSapiensUseCase.execute(
                   token,
                   objectsWanted.documento.componentesDigitais[0].id,
                   idUser,
@@ -158,7 +160,23 @@ export class ReadDocumentPageUseService {
                     token,
                   );
                   continue;
-                } */
+                }
+
+                const pdfText = await readPDF(
+                  `./src/modules/Pdfs/${idUser}.pdf`,
+                );
+                console.log(pdfText);
+                const stringIsTrue = pdfText.indexOf(StringBusca);
+                if (stringIsTrue != -1) {
+                  //etiquetar
+                  console.log('achou');
+                } else {
+                  //etiquetar
+                  console.log('nao achou');
+                }
+                await deletePDF(idUser);
+                //TODOS ME ODEIAM
+
                 //const filepath = path.join(__dirname, 'sislabra.pdf');
                 /* const filepath = path.join(
                   'E:/AGU/api-mark/src/modules/Pdfs',
