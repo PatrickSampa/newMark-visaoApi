@@ -1,7 +1,9 @@
 import { IInformationsForCalculeDTO } from '../../../DTO/InformationsForCalculeDTO';
+import { CreateHtmlFromPdf } from '../../../python';
 
 //import { CreateHtmlFromPdf } from '../../../python';
 import { getPastaUseCase } from '../../GetPasta';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { getPdfSuperSapiensUseCase } from '../../GetPdfSuperSapiens';
 import { getTarefaUseCase } from '../../GetTarefa';
 import { getUserResponsibleIdUseCase } from '../../GetUserResponsibleId';
@@ -12,10 +14,9 @@ import { uploadPaginaDosprevUseCase } from '../../UploadPaginaDosprev';
 import { uploudObservacaoUseCase } from '../../UploudObservacao';
 import { convertToDate } from '../Help/createFormatDate';
 import { verificarQuantosDiasDocumentExpi } from '../Help/verificarQuantosDiasDocumentExpi';
-/* import * as fs from 'fs';
+import * as fs from 'fs';
 
-
-import path from 'path'; */
+//import path from 'path';
 
 export class ReadDocumentPageUseService {
   async execute(
@@ -27,6 +28,7 @@ export class ReadDocumentPageUseService {
     StringBusca: string[],
     StringObservacao: string[],
     timeCreationDocument: number[],
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     idUser: string,
   ): Promise<string | null | unknown> {
     const response: Array<IInformationsForCalculeDTO> = [];
@@ -136,7 +138,15 @@ export class ReadDocumentPageUseService {
                   //etiquetar
                 }
               } else {
-                const responseTeste = await getPdfSuperSapiensUseCase.execute(
+                /* console.log('chegou aqui?');
+                const teste = await CreateHtmlFromPdf();
+                console.log('teste' + teste);
+                const valor = fs.readFileSync(
+                  './src/modules/Pdfs/patrick.html',
+                  'utf8',
+                );
+                console.log(valor.indexOf('Empr')); */
+                /* const responseTeste = await getPdfSuperSapiensUseCase.execute(
                   token,
                   objectsWanted.documento.componentesDigitais[0].id,
                   idUser,
@@ -148,8 +158,7 @@ export class ReadDocumentPageUseService {
                     token,
                   );
                   continue;
-                }
-
+                } */
                 //const filepath = path.join(__dirname, 'sislabra.pdf');
                 /* const filepath = path.join(
                   'E:/AGU/api-mark/src/modules/Pdfs',

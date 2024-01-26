@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import dotenv from 'dotenv';
 
 export async function CreateHtmlFromPdf(): Promise<string> {
@@ -8,9 +9,9 @@ export async function CreateHtmlFromPdf(): Promise<string> {
   // console.log("", result)
   // return result
   const { spawn } = require('child_process');
-
   // const childPython = spawn("python", ["--version"])
-  const childPython = spawn(CMD_Python, ['./python/pdfToHtml.py']);
+  const childPython = spawn(CMD_Python, ['./python/pdfToHtml.py', 'patrick']);
+  console.log("aqui?")
   return new Promise<string>((resolve, reject) => {
     childPython.on('exit', (code: any) => {
       if (code == 0) {
