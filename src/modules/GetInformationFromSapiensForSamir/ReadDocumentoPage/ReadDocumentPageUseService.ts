@@ -147,9 +147,9 @@ export class ReadDocumentPageUseService {
                   console.log('passou4');
                 } else if (!itemWantedIncludes && itemWantedIndexOf == -1) {
                   observacoesFinais +=
-                    StringObservacao[contador] + ' NÃO ENCONTRADO - ';
+                  StringBusca[contador] + ' NÃO ENCONTRADO - ';
                 } else {
-                  StringObservacao[contador] + ' VERFICAR OCORRÊNCIA - ';
+                  StringBusca[contador] + ' VERFICAR OCORRÊNCIA - ';
                 }
               } else {
                 /* console.log('chegou aqui?');
