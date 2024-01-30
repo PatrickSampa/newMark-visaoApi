@@ -16,6 +16,7 @@ import { uploadPaginaDosprevUseCase } from '../../UploadPaginaDosprev';
 import { uploudObservacaoUseCase } from '../../UploudObservacao';
 import { convertToDate } from '../Help/createFormatDate';
 import { verificarQuantosDiasDocumentExpi } from '../Help/verificarQuantosDiasDocumentExpi';
+import { encontrarEVerificarTamanho } from './TEXTE';
 ////import * as fs from 'fs';
 
 //import path from 'path';
@@ -50,7 +51,9 @@ export class ReadDocumentPageUseService {
         token,
       });
       //testabdi = ProcessSapiens
+      console.log(ProcessSapiens.length);
       for (let i = 0; i <= ProcessSapiens.length - 1; i++) {
+        console.log('entrou nos processos');
         const processo_id = ProcessSapiens[i].processo.id;
         const getArvoreDocumento: ResponseFolder =
           await getPastaUseCase.execute({
@@ -68,7 +71,7 @@ export class ReadDocumentPageUseService {
           continue;
         }
         contador = StringBusca.length - 1;
-        console.log();
+        console.log('chegou aqui?');
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for await (const info of StringBusca) {
           if (timeCreationDocument[contador]) {
@@ -103,6 +106,7 @@ export class ReadDocumentPageUseService {
               //etiquetar processo invalido fora do prazo
             }
           } else {
+            console.log('passou1');
             const objectsWanted = getArvoreDocumento.find((Documento) => {
               const nomeMovimentacao = Documento?.descricao;
               const nameWanted = Documento?.documento.tipoDocumento.nome;
@@ -116,7 +120,7 @@ export class ReadDocumentPageUseService {
                 return Documento;
               }
             });
-
+            console.log('passou2');
             //obj = objectsWanted;
             if (objectsWanted != undefined) {
               const typeDocument =
@@ -128,16 +132,24 @@ export class ReadDocumentPageUseService {
                   objectsWanted.documento.componentesDigitais[0].id,
                   token,
                 );
-
+                console.log('passou3');
                 const itemWantedIndexOf = page.indexOf(StringBusca[contador]);
                 const itemWantedIncludes = page.includes(StringBusca[contador]);
-
+                console.log(
+                  encontrarEVerificarTamanho(
+                    page,
+                    StringBusca[contador],
+                    //StringBusca[contador].length,
+                  ),
+                );
                 if (itemWantedIndexOf !== -1 && itemWantedIncludes) {
-                  observacoesFinais += StringObservacao[contador] + ', ';
+                  observacoesFinais += StringObservacao[contador] + ' - ';
+                  console.log('passou4');
                 } else if (!itemWantedIncludes && itemWantedIndexOf == -1) {
-                  //etiquetar
+                  observacoesFinais +=
+                    StringObservacao[contador] + ' NÃO ENCONTRADO - ';
                 } else {
-                  //etiquetar
+                  StringObservacao[contador] + ' VERFICAR OCORRÊNCIA - ';
                 }
               } else {
                 /* console.log('chegou aqui?');
@@ -168,10 +180,10 @@ export class ReadDocumentPageUseService {
                 console.log(pdfText);
                 const stringIsTrue = pdfText.indexOf(StringBusca);
                 if (stringIsTrue != -1) {
-                  //etiquetar
+                  observacoesFinais += StringObservacao[contador] + ' - ';
                   console.log('achou');
                 } else {
-                  //etiquetar
+                  StringObservacao[contador] + ' NÃO ENCONTRADO - ';
                   console.log('nao achou');
                 }
                 await deletePDF(idUser);
@@ -191,8 +203,17 @@ export class ReadDocumentPageUseService {
           contador--;
         }
         console.log(observacoesFinais);
-        return testabdi;
+        console.log('passou5');
+        await uploudObservacaoUseCase.execute(
+          [ProcessSapiens[i]],
+          `${observacoesFinais}`,
+          token,
+        );
+        console.log('passou6');
+        observacoesFinais = '';
       }
+      console.log('erro no retornou');
+      return testabdi;
     } catch (e) {
       if (response.length > 0) {
         return response;
