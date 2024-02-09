@@ -11,6 +11,7 @@ export type ResponseFolder = [
       areasTrabalhos: Array<any>;
       numeroFolhas: number;
       dataHoraProducao: string;
+      descricaoOutros: string;
       semEfeito: boolean;
       assinado: boolean;
       autor: string;

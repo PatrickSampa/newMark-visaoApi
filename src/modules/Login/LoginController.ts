@@ -8,10 +8,10 @@ export class LoginController {
     request: Request,
     response: Response,
   ): Promise<Response | unknown> {
-    const { username, password } = request.body;
+    const { email, password } = request.body;
     try {
       const bearenToken = await this.loginUserCase.execute({
-        username,
+        email,
         password,
       });
       return response.status(200).json(bearenToken);

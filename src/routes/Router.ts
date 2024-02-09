@@ -14,7 +14,7 @@ rotasTestes.get('/id', (req, res) => {
   return getUserResponsibleIdController.handle(req, res);
 });
 
-rotasTestes.get('/processos', (req, res) => {
+rotasTestes.post('/processos', (req, res) => {
   return getInformationFromSapiensForSamirController.handle(req, res);
 });
 

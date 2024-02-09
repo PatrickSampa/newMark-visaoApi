@@ -13,9 +13,10 @@ export class GetInformationFromSapiensForSamirController {
       observacao_sapiens,
       movimentacao,
       conteudo,
+      StringObservacao,
       timeCreationDocument,
     } = request.body;
-
+    console.log(request.body);
     try {
       const responseInfo =
         await this.getInformationFromSapiensForSamirUseCase.execute(
@@ -24,6 +25,7 @@ export class GetInformationFromSapiensForSamirController {
           observacao_sapiens,
           movimentacao,
           conteudo,
+          StringObservacao,
           timeCreationDocument,
         );
       return response.status(200).json(responseInfo);
