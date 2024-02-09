@@ -1,3 +1,5 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable prefer-const */
 //import axios from 'axios';
 import { getUserResponsibleIdUseCase } from '../../GetUserResponsibleId';
 import { loginUserCase } from '../../Login';
@@ -97,18 +99,34 @@ export class GetInformationFromSapiensForSamirUseCase {
               const nomeMovimentacao = Documento?.descricao;
               const nameWanted = Documento?.documento.tipoDocumento.nome;
               const name = nameWanted.indexOf(conteudo[contador].toUpperCase());
-              console.log(Documento?.documento.descricaoOutros);
+              // eslint-disable-next-line prettier/prettier
+              let verificardorStringDescricaoOutros = Documento?.documento?.descricaoOutros
+              
+              // eslint-disable-next-line prettier/prettier
+              if(!verificardorStringDescricaoOutros) {
+                verificardorStringDescricaoOutros = '';
+              }
+              console.log(verificardorStringDescricaoOutros.trim()== conteudo[contador].trim());
+              const DescricaoOutrosforof =
+                verificardorStringDescricaoOutros.trim().indexOf(
+                  conteudo[contador].toUpperCase().trim(),
+                );
+                console.log(DescricaoOutrosforof)
               const wantedIndexOf = nomeMovimentacao.indexOf(
                 movimentacao[contador].toUpperCase(),
               );
-              if (wantedIndexOf != -1) {
+/*               if (wantedIndexOf != -1) {
                 console.log(Documento.numeracaoSequencial);
-              }
+              } */
               if (name != -1 && wantedIndexOf != -1) {
                 return Documento;
               }
+              if (wantedIndexOf != -1 && DescricaoOutrosforof != -1) {
+                console.log('entrou')
+                return Documento;
+              }
             });
-            console.log('passou2 ' + objectsWanted);
+            console.log(objectsWanted);
             //obj = objectsWanted;
             if (objectsWanted != undefined) {
               observacoesFinais += StringObservacao[contador] + ' - ';
@@ -173,10 +191,9 @@ export class GetInformationFromSapiensForSamirUseCase {
           `${observacoesFinais}`,
           token,
         );
-        console.log('passou6');
+        console.log('passou6' + observacoesFinais);
         observacoesFinais = '';
       }
-      console.log('erro no retornou');
       return testabdi;
     } catch (e) {
       if (response.length > 0) {
