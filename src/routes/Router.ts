@@ -18,7 +18,7 @@ rotasTestes.post('/processos', (req, res) => {
   return getInformationFromSapiensForSamirController.handle(req, res);
 });
 
-rotasTestes.get('/page', (req, res) => {
+rotasTestes.post('/page', (req, res) => {
   return readDocumentPageUseController.handle(req, res);
 });
 

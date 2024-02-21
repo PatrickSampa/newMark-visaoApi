@@ -33,10 +33,12 @@ export class ReadDocumentPageUseService {
     timeCreationDocument: number[],
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     idUser: string,
+    typeSearch: string,
   ): Promise<string | null | unknown> {
     const response: Array<IInformationsForCalculeDTO> = [];
     try {
       const token = await loginUserCase.execute({ email, password });
+
       const user_id = await getUserResponsibleIdUseCase.execute(token);
       const limit = 333;
       //let obj: any = '';
@@ -49,6 +51,7 @@ export class ReadDocumentPageUseService {
         user_id,
         observacao_sapiens,
         token,
+        typeSearch,
       });
       //testabdi = ProcessSapiens
       console.log(ProcessSapiens.length);
@@ -106,16 +109,37 @@ export class ReadDocumentPageUseService {
               //etiquetar processo invalido fora do prazo
             }
           } else {
+            console.log('adioasdiasdsaukjdghsdjyhsagduasy');
             const objectsWanted = getArvoreDocumento.find((Documento) => {
               const nomeMovimentacao = Documento?.descricao;
               const nameWanted = Documento?.documento.tipoDocumento.nome;
               const name = nameWanted.indexOf(conteudo[contador].toUpperCase());
+              // eslint-disable-next-line prettier/prettier
+              let verificardorStringDescricaoOutros = Documento?.documento?.descricaoOutros
 
+              // eslint-disable-next-line prettier/prettier
+              if(!verificardorStringDescricaoOutros) {
+                verificardorStringDescricaoOutros = '';
+              }
+              console.log(
+                verificardorStringDescricaoOutros.trim() ==
+                  conteudo[contador].trim(),
+              );
+              const DescricaoOutrosforof = verificardorStringDescricaoOutros
+                .trim()
+                .indexOf(conteudo[contador].toUpperCase().trim());
+              console.log(DescricaoOutrosforof);
               const wantedIndexOf = nomeMovimentacao.indexOf(
                 movimentacao[contador].toUpperCase(),
               );
-
+              /*               if (wantedIndexOf != -1) {
+                console.log(Documento.numeracaoSequencial);
+              } */
               if (name != -1 && wantedIndexOf != -1) {
+                return Documento;
+              }
+              if (wantedIndexOf != -1 && DescricaoOutrosforof != -1) {
+                console.log('entrou');
                 return Documento;
               }
             });
@@ -147,8 +171,11 @@ export class ReadDocumentPageUseService {
                 } else if (!itemWantedIncludes && itemWantedIndexOf == -1) {
                   observacoesFinais +=
                     StringBusca[contador] + ' NÃO ENCONTRADO - ';
+                  console.log('passsou5');
                 } else {
-                  StringBusca[contador] + ' VERFICAR OCORRÊNCIA - ';
+                  console.log('passou6');
+                  observacoesFinais +=
+                    StringBusca[contador] + ' VERFICAR OCORRÊNCIA - ';
                 }
               } else {
                 /* console.log('chegou aqui?');
@@ -176,14 +203,16 @@ export class ReadDocumentPageUseService {
                 const pdfText = await readPDF(
                   `./src/modules/Pdfs/${idUser}.pdf`,
                 );
-                console.log(pdfText);
+                //console.log(pdfText);
                 const stringIsTrue = pdfText.indexOf(StringBusca);
                 if (stringIsTrue != -1) {
                   observacoesFinais += StringObservacao[contador] + ' - ';
                   console.log('achou');
                 } else {
-                  StringObservacao[contador] + ' NÃO ENCONTRADO - ';
-                  console.log('nao achou');
+                  console.log('nao achou' + contador);
+                  console.log(StringObservacao);
+                  observacoesFinais +=
+                    StringObservacao[contador] + ' NÃO ENCONTRADO - ';
                 }
                 await deletePDF(idUser);
                 //TODOS ME ODEIAM
@@ -203,6 +232,10 @@ export class ReadDocumentPageUseService {
         }
         console.log(observacoesFinais);
         console.log('passou5');
+        if (observacoesFinais.length <= 0) {
+          observacoesFinais = 'Nenhum Documento Eencontrado';
+        }
+        //console.log(ProcessSapiens[i]);
         await uploudObservacaoUseCase.execute(
           [ProcessSapiens[i]],
           `${observacoesFinais}`,
@@ -214,6 +247,7 @@ export class ReadDocumentPageUseService {
       console.log('erro no retornou');
       return testabdi;
     } catch (e) {
+      console.log(e);
       if (response.length > 0) {
         return response;
       } else {

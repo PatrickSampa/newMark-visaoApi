@@ -3,6 +3,7 @@ import { ResponseProcess } from '../Response/ResponseProcess';
 
 export class PayloadUploadObservacao {
   async execute(data: ResponseProcess, observacao: string) {
+    //const idDoSetorOrigem = data[0]?.setorOrigem?.id ?? null;
     return `
     {
         "postIt": null,
@@ -16,7 +17,7 @@ export class PayloadUploadObservacao {
         "processo": ${data[0].processo.id},
         "especieTarefa": ${data[0].especieTarefa.id},
         "usuarioResponsavel": ${data[0].usuarioResponsavel.id},
-        "setorOrigem": ${data[0].setorOrigem.id},
+        "setorOrigem": ${data[0]?.setorOrigem?.id ?? null},
         "setorResponsavel": ${data[0].setorResponsavel.id},
         "distribuicaoAutomatica": ${data[0].distribuicaoAutomatica},
         "folder": null,

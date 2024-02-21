@@ -21,6 +21,7 @@ export class GetInformationFromSapiensForSamirUseCase {
     conteudo: string[],
     StringObservacao: string[],
     timeCreationDocument: number[],
+    typeSearch: string
   ): Promise<string | null | unknown> {
     const response: Array<IInformationsForCalculeDTO> = [];
     try {
@@ -37,6 +38,7 @@ export class GetInformationFromSapiensForSamirUseCase {
         user_id,
         observacao_sapiens,
         token,
+        typeSearch
       });
       //testabdi = ProcessSapiens
       console.log(ProcessSapiens.length);
