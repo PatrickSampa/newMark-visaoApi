@@ -17,7 +17,7 @@ export class ReadDocumentPageUseController {
       idUser,
       typeSearch,
     } = request.body;
-    console.log(request.body);
+    /* console.log(request.body); */
     try {
       const responseInfo = await this.readDocumentPageUseService.execute(
         email,

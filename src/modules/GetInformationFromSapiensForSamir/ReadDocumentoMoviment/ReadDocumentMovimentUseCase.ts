@@ -11,6 +11,7 @@ import { uploudObservacaoUseCase } from '../../UploudObservacao';
 import { IInformationsForCalculeDTO } from '../../../DTO/InformationsForCalculeDTO';
 import { convertToDate } from '../Help/createFormatDate';
 import { verificarQuantosDiasDocumentExpi } from '../Help/verificarQuantosDiasDocumentExpi';
+import { removerAcentos } from '../ReadDocumentoPage/tirar';
 
 export class GetInformationFromSapiensForSamirUseCase {
   async execute(
@@ -98,92 +99,62 @@ export class GetInformationFromSapiensForSamirUseCase {
           } else {
             console.log('pra ca');
             const objectsWanted = getArvoreDocumento.find((Documento) => {
-              const nomeMovimentacao = Documento?.descricao;
-              const nameWanted = Documento?.documento.tipoDocumento.nome;
-              const name = nameWanted.indexOf(conteudo[contador].toUpperCase());
+              const nomeMovimentacao = removerAcentos(Documento?.descricao);
+              const nameWanted = removerAcentos(
+                Documento?.documento.tipoDocumento.nome,
+              );
+
               // eslint-disable-next-line prettier/prettier
               let verificardorStringDescricaoOutros = Documento?.documento?.descricaoOutros
-              
+
               // eslint-disable-next-line prettier/prettier
               if(!verificardorStringDescricaoOutros) {
                 verificardorStringDescricaoOutros = '';
               }
-              console.log(verificardorStringDescricaoOutros.trim()== conteudo[contador].trim());
-              const DescricaoOutrosforof =
-                verificardorStringDescricaoOutros.trim().indexOf(
-                  conteudo[contador].toUpperCase().trim(),
+
+              if (conteudo[contador]) {
+                const name = nameWanted.indexOf(
+                  removerAcentos(conteudo[contador]).toUpperCase(),
                 );
-                console.log(DescricaoOutrosforof)
-              const wantedIndexOf = nomeMovimentacao.indexOf(
-                movimentacao[contador].toUpperCase(),
-              );
-/*               if (wantedIndexOf != -1) {
-                console.log(Documento.numeracaoSequencial);
-              } */
-              if (name != -1 && wantedIndexOf != -1) {
-                return Documento;
-              }
-              if (wantedIndexOf != -1 && DescricaoOutrosforof != -1) {
-                console.log('entrou')
-                return Documento;
+
+                const DescricaoOutrosforof = removerAcentos(
+                  verificardorStringDescricaoOutros,
+                )
+                  .trim()
+                  .indexOf(
+                    removerAcentos(conteudo[contador]).toUpperCase().trim(),
+                  );
+
+                const wantedIndexOf = nomeMovimentacao.indexOf(
+                  removerAcentos(movimentacao[contador]).toUpperCase(),
+                );
+                /*               if (wantedIndexOf != -1) {
+                  console.log(Documento.numeracaoSequencial);
+                } */
+                if (name != -1 && wantedIndexOf != -1) {
+                  return Documento;
+                }
+                if (wantedIndexOf != -1 && DescricaoOutrosforof != -1) {
+                  console.log('entrou');
+                  return Documento;
+                }
+              } else {
+                const wantedIndexOf = nomeMovimentacao.indexOf(
+                  removerAcentos(movimentacao[contador]).toUpperCase(),
+                );
+                if (wantedIndexOf != -1) {
+                  return Documento;
+                }
               }
             });
             console.log(objectsWanted);
             //obj = objectsWanted;
             if (objectsWanted != undefined) {
-              observacoesFinais += StringObservacao[contador] + ' - ';
-              /*               if (typeDocument == 'html') {
-                const page = await uploadPaginaDosprevUseCase.execute(
-                  objectsWanted.documento.componentesDigitais[0].id,
-                  token,
-                );
-                console.log('passou3');
-                const itemWantedIndexOf = page.indexOf(StringBusca[contador]);
-                const itemWantedIncludes = page.includes(StringBusca[contador]);
-                console.log(
-                  encontrarEVerificarTamanho(page, StringBusca[contador]),
-                );
-                if (itemWantedIndexOf !== -1 && itemWantedIncludes) {
-                  observacoesFinais += StringObservacao[contador] + ' - ';
-                  console.log('passou4');
-                } else if (!itemWantedIncludes && itemWantedIndexOf == -1) {
-                  observacoesFinais +=
-                    StringBusca[contador] + ' NÃO ENCONTRADO - ';
-                } else {
-                  StringBusca[contador] + ' VERFICAR OCORRÊNCIA - ';
-                }
-              } else {
-                const responseTeste = await getPdfSuperSapiensUseCase.execute(
-                  token,
-                  objectsWanted.documento.componentesDigitais[0].id,
-                  idUser,
-                );
-                if (!responseTeste) {
-                  await uploudObservacaoUseCase.execute(
-                    [ProcessSapiens[i]],
-                    'ERRO AO LÊ O PDF',
-                    token,
-                  );
-                  continue;
-                }
-
-                const pdfText = await readPDF(
-                  `./src/modules/Pdfs/${idUser}.pdf`,
-                );
-                console.log(pdfText);
-                const stringIsTrue = pdfText.indexOf(StringBusca);
-                if (stringIsTrue != -1) {
-                  observacoesFinais += StringObservacao[contador] + ' - ';
-                  console.log('achou');
-                } else {
-                  StringObservacao[contador] + ' NÃO ENCONTRADO - ';
-                  console.log('nao achou');
-                }
-                await deletePDF(idUser);
-              } */
+              observacoesFinais += `${StringObservacao[contador]} - SEQ ${objectsWanted.numeracaoSequencial} | `;
+              
             } else {
               observacoesFinais +=
-                `conteudo ` + conteudo[contador] + 'Não Encontrado - ';
+                conteudo[contador] + 'Não Encontrado | ';
             }
           }
           contador--;

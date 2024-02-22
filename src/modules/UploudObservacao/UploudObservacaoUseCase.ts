@@ -13,7 +13,7 @@ export class UploudObservacaoUseCase {
       ProcessSapiens,
       observacao,
     );
-    console.log(payload);
+    /*  console.log(payload); */
     const URL = await requestUrlObservacao.execute(ProcessSapiens[0].id);
     return requisitionAxiosPut.execute(payload, token, URL);
   }

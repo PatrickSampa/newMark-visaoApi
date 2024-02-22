@@ -17,6 +17,7 @@ import { uploudObservacaoUseCase } from '../../UploudObservacao';
 import { convertToDate } from '../Help/createFormatDate';
 import { verificarQuantosDiasDocumentExpi } from '../Help/verificarQuantosDiasDocumentExpi';
 import { encontrarEVerificarTamanho } from './TEXTE';
+import { removerAcentos } from './tirar';
 ////import * as fs from 'fs';
 
 //import path from 'path';
@@ -109,11 +110,12 @@ export class ReadDocumentPageUseService {
               //etiquetar processo invalido fora do prazo
             }
           } else {
-            console.log('adioasdiasdsaukjdghsdjyhsagduasy');
             const objectsWanted = getArvoreDocumento.find((Documento) => {
-              const nomeMovimentacao = Documento?.descricao;
-              const nameWanted = Documento?.documento.tipoDocumento.nome;
-              const name = nameWanted.indexOf(conteudo[contador].toUpperCase());
+              const nomeMovimentacao = removerAcentos(Documento?.descricao);
+              const nameWanted = removerAcentos(
+                Documento?.documento.tipoDocumento.nome,
+              );
+
               // eslint-disable-next-line prettier/prettier
               let verificardorStringDescricaoOutros = Documento?.documento?.descricaoOutros
 
@@ -121,31 +123,52 @@ export class ReadDocumentPageUseService {
               if(!verificardorStringDescricaoOutros) {
                 verificardorStringDescricaoOutros = '';
               }
-              console.log(
-                verificardorStringDescricaoOutros.trim() ==
-                  conteudo[contador].trim(),
-              );
-              const DescricaoOutrosforof = verificardorStringDescricaoOutros
-                .trim()
-                .indexOf(conteudo[contador].toUpperCase().trim());
-              console.log(DescricaoOutrosforof);
-              const wantedIndexOf = nomeMovimentacao.indexOf(
-                movimentacao[contador].toUpperCase(),
-              );
-              /*               if (wantedIndexOf != -1) {
-                console.log(Documento.numeracaoSequencial);
-              } */
-              if (name != -1 && wantedIndexOf != -1) {
-                return Documento;
+
+              if (conteudo[contador]) {
+                const name = nameWanted.indexOf(
+                  removerAcentos(conteudo[contador]).toUpperCase(),
+                );
+
+                const DescricaoOutrosforof = removerAcentos(
+                  verificardorStringDescricaoOutros,
+                )
+                  .trim()
+                  .indexOf(
+                    removerAcentos(conteudo[contador]).toUpperCase().trim(),
+                  );
+
+                const wantedIndexOf = nomeMovimentacao.indexOf(
+                  removerAcentos(movimentacao[contador]).toUpperCase(),
+                );
+                /*               if (wantedIndexOf != -1) {
+                  console.log(Documento.numeracaoSequencial);
+                } */
+                if (name != -1 && wantedIndexOf != -1) {
+                  return Documento;
+                }
+                if (wantedIndexOf != -1 && DescricaoOutrosforof != -1) {
+                  console.log('entrou');
+                  return Documento;
+                }
+              } else {
+                const wantedIndexOf = nomeMovimentacao.indexOf(
+                  removerAcentos(movimentacao[contador]).toUpperCase(),
+                );
+                if (wantedIndexOf != -1) {
+                  return Documento;
+                }
               }
-              if (wantedIndexOf != -1 && DescricaoOutrosforof != -1) {
-                console.log('entrou');
-                return Documento;
-              }
+
+              // eslint-disable-next-line prefer-const
             });
+
             console.log('passou2');
-            //obj = objectsWanted;
-            if (objectsWanted != undefined) {
+
+            const componentesDigitaisIsTrue =
+              objectsWanted?.documento?.componentesDigitais ?? false;
+            console.log(observacoesFinais + 'bem aqui');
+            console.log(componentesDigitaisIsTrue);
+            if (objectsWanted != undefined && componentesDigitaisIsTrue) {
               const typeDocument =
                 objectsWanted.documento.componentesDigitais[0].mimetype
                   .split('/')[1]
@@ -166,7 +189,7 @@ export class ReadDocumentPageUseService {
                   ),
                 );
                 if (itemWantedIndexOf !== -1 && itemWantedIncludes) {
-                  observacoesFinais += StringObservacao[contador] + ' - ';
+                  observacoesFinais += `${StringObservacao[contador]} - SEQ ${objectsWanted.numeracaoSequencial} | `;
                   console.log('passou4');
                 } else if (!itemWantedIncludes && itemWantedIndexOf == -1) {
                   observacoesFinais +=
@@ -174,8 +197,7 @@ export class ReadDocumentPageUseService {
                   console.log('passsou5');
                 } else {
                   console.log('passou6');
-                  observacoesFinais +=
-                    StringBusca[contador] + ' VERFICAR OCORRÊNCIA - ';
+                  observacoesFinais += `${StringBusca[contador]} - SEQ ${objectsWanted.numeracaoSequencial} -- ' VERFICAR OCORRÊNCIA | `;
                 }
               } else {
                 /* console.log('chegou aqui?');
@@ -203,16 +225,16 @@ export class ReadDocumentPageUseService {
                 const pdfText = await readPDF(
                   `./src/modules/Pdfs/${idUser}.pdf`,
                 );
-                //console.log(pdfText);
+
                 const stringIsTrue = pdfText.indexOf(StringBusca);
                 if (stringIsTrue != -1) {
-                  observacoesFinais += StringObservacao[contador] + ' - ';
+                  observacoesFinais += `${StringObservacao[contador]} - SEQ ${objectsWanted.numeracaoSequencial} | `;
                   console.log('achou');
                 } else {
                   console.log('nao achou' + contador);
-                  console.log(StringObservacao);
+
                   observacoesFinais +=
-                    StringObservacao[contador] + ' NÃO ENCONTRADO - ';
+                    StringObservacao[contador] + ' NÃO ENCONTRADO | ';
                 }
                 await deletePDF(idUser);
                 //TODOS ME ODEIAM
@@ -225,7 +247,15 @@ export class ReadDocumentPageUseService {
                 fs.writeFileSync(filepath, responseTeste); */
               }
             } else {
-              //String não encontrada
+              console.log('quantas vezes aqui' + contador);
+              console.log(observacoesFinais);
+              if (objectsWanted && !componentesDigitaisIsTrue) {
+                observacoesFinais +=
+                  'ERRO AO LÊ DOCUMENTO  ' + movimentacao[contador] + ' | ';
+              } else {
+                observacoesFinais +=
+                  'DOCUMENTO ' + movimentacao[contador] + ' NÃO ENCONTRADO | ';
+              }
             }
           }
           contador--;
@@ -233,7 +263,7 @@ export class ReadDocumentPageUseService {
         console.log(observacoesFinais);
         console.log('passou5');
         if (observacoesFinais.length <= 0) {
-          observacoesFinais = 'Nenhum Documento Eencontrado';
+          observacoesFinais = 'Nenhum Documento Encontrado';
         }
         //console.log(ProcessSapiens[i]);
         await uploudObservacaoUseCase.execute(
@@ -241,7 +271,7 @@ export class ReadDocumentPageUseService {
           `${observacoesFinais}`,
           token,
         );
-        console.log('passou6');
+
         observacoesFinais = '';
       }
       console.log('erro no retornou');
