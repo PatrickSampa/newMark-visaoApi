@@ -15,6 +15,7 @@ export class GetInformationFromSapiensForSamirController {
       conteudo,
       StringObservacao,
       timeCreationDocument,
+      typeSearch
     } = request.body;
     console.log(request.body);
     try {
@@ -27,6 +28,7 @@ export class GetInformationFromSapiensForSamirController {
           conteudo,
           StringObservacao,
           timeCreationDocument,
+          typeSearch
         );
       return response.status(200).json(responseInfo);
     } catch (erro) {
