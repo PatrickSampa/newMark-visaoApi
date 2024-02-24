@@ -226,7 +226,9 @@ export class ReadDocumentPageUseService {
                   `./src/modules/Pdfs/${idUser}.pdf`,
                 );
 
-                const stringIsTrue = pdfText.indexOf(StringBusca);
+                const stringIsTrue = pdfText
+                  .toUpperCase()
+                  .indexOf(StringBusca[contador].toUpperCase());
                 if (stringIsTrue != -1) {
                   observacoesFinais += `${StringObservacao[contador]} - SEQ ${objectsWanted.numeracaoSequencial} | `;
                   console.log('achou');
