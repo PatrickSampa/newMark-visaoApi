@@ -24,7 +24,7 @@ export class GetPdfSuperSapiensUseCase {
       const donwloadPdf = await requisitionAxiosPdf.execute(token, URL);
 
       const filepath = path.join(
-        'E:/AGU/api-mark/src/modules/Pdfs',
+        './src/modules/Pdfs',
         `${idUser}.pdf`,
       );
       fs.writeFileSync(filepath, donwloadPdf);
