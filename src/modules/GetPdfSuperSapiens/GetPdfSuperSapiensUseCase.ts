@@ -22,11 +22,8 @@ export class GetPdfSuperSapiensUseCase {
         'base64',
       ); */
       const donwloadPdf = await requisitionAxiosPdf.execute(token, URL);
-
-      const filepath = path.join(
-        './src/modules/Pdfs',
-        `${idUser}.pdf`,
-      );
+      console.log(idUser);
+      const filepath = path.join('./src/modules/Pdfs', `${idUser}.pdf`);
       fs.writeFileSync(filepath, donwloadPdf);
       return true;
     } catch (e) {

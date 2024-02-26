@@ -18,6 +18,7 @@ import { convertToDate } from '../Help/createFormatDate';
 import { verificarQuantosDiasDocumentExpi } from '../Help/verificarQuantosDiasDocumentExpi';
 import { encontrarEVerificarTamanho } from './TEXTE';
 import { removerAcentos } from './tirar';
+import jwt from 'jsonwebtoken';
 ////import * as fs from 'fs';
 
 //import path from 'path';
@@ -39,6 +40,13 @@ export class ReadDocumentPageUseService {
     const response: Array<IInformationsForCalculeDTO> = [];
     try {
       const token = await loginUserCase.execute({ email, password });
+      const idPdf = jwt.decode(idUser)?.sub;
+      let pdfUserPdf: string;
+      if (typeof idPdf === 'string') {
+        pdfUserPdf = idPdf;
+      } else {
+        pdfUserPdf = idUser.split('-')[0];
+      }
 
       const user_id = await getUserResponsibleIdUseCase.execute(token);
       const limit = 333;
@@ -163,7 +171,6 @@ export class ReadDocumentPageUseService {
             });
 
             console.log('passou2');
-
             const componentesDigitaisIsTrue =
               objectsWanted?.documento?.componentesDigitais ?? false;
             console.log(observacoesFinais + 'bem aqui');
@@ -179,8 +186,12 @@ export class ReadDocumentPageUseService {
                   token,
                 );
                 console.log('passou3');
-                const itemWantedIndexOf = page.indexOf(StringBusca[contador]);
-                const itemWantedIncludes = page.includes(StringBusca[contador]);
+                const itemWantedIndexOf = page
+                  .toUpperCase()
+                  .indexOf(StringBusca[contador].toUpperCase().trim());
+                const itemWantedIncludes = page
+                  .toUpperCase()
+                  .includes(StringBusca[contador].toUpperCase().trim());
                 console.log(
                   encontrarEVerificarTamanho(
                     page,
@@ -211,7 +222,7 @@ export class ReadDocumentPageUseService {
                 const responseTeste = await getPdfSuperSapiensUseCase.execute(
                   token,
                   objectsWanted.documento.componentesDigitais[0].id,
-                  idUser,
+                  pdfUserPdf,
                 );
                 if (!responseTeste) {
                   await uploudObservacaoUseCase.execute(
@@ -223,12 +234,13 @@ export class ReadDocumentPageUseService {
                 }
 
                 const pdfText = await readPDF(
-                  `./src/modules/Pdfs/${idUser}.pdf`,
+                  `./src/modules/Pdfs/${idPdf}.pdf`,
                 );
 
                 const stringIsTrue = pdfText
                   .toUpperCase()
-                  .indexOf(StringBusca[contador].toUpperCase());
+                  .indexOf(StringBusca[contador].toUpperCase().trim());
+                console.log(pdfText);
                 if (stringIsTrue != -1) {
                   observacoesFinais += `${StringObservacao[contador]} - SEQ ${objectsWanted.numeracaoSequencial} | `;
                   console.log('achou');
@@ -236,9 +248,9 @@ export class ReadDocumentPageUseService {
                   console.log('nao achou' + contador);
 
                   observacoesFinais +=
-                    StringObservacao[contador] + ' NÃO ENCONTRADO | ';
+                    StringBusca[contador] + ' NÃO ENCONTRADO | ';
                 }
-                await deletePDF(idUser);
+                await deletePDF(pdfUserPdf);
                 //TODOS ME ODEIAM
 
                 //const filepath = path.join(__dirname, 'sislabra.pdf');
