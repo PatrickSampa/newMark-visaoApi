@@ -1,0 +1,16 @@
+version: '1.0.0'
+services:
+  app:
+    image: patricksampa/mark-api:1.0.0
+    restart: always
+    hostname: visao2.0--{{.task.Slot}}
+    networks:
+      - visao2.0
+    environment:
+      API_PORT: 3009
+      CMD_Python: python
+    ports:
+      - "3009:3009"
+networks:
+  visao2.0:
+    driver: bridge        
